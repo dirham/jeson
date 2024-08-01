@@ -8,9 +8,8 @@ defmodule ParserTest do
         {"some": 123, "other obj": {"val": 80}, "test": null,}
       """
 
-      tokens = Lexer.scan(input)
       expect = {:ok, %{"some" => 123, "other obj" => %{"val" => 80}, "test" => nil}}
-      actual = Parser.parse(tokens)
+      actual = Parser.parse(input)
 
       assert expect == actual
       IO.inspect(actual)
@@ -21,9 +20,8 @@ defmodule ParserTest do
         {"some": 123, "other obj": {"val": 80}, "test": [12, false]}
       """
 
-      tokens = Lexer.scan(input)
       expect = {:ok, %{"some" => 123, "other obj" => %{"val" => 80}, "test" => [12, false]}}
-      actual = Parser.parse(tokens)
+      actual = Parser.parse(input)
 
       assert expect == actual
       IO.inspect(actual)

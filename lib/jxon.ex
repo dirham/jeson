@@ -12,7 +12,7 @@ defmodule Jxon do
       :world
 
   """
-  def hello do
-    :world
+  def parse(data) when is_binary(data) do
+    Parser.parse(data)
   end
 end

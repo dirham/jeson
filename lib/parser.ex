@@ -10,8 +10,15 @@ defmodule Parser do
   @type json_object :: map()
   @type json_array :: list(json_value())
 
-  @spec parse(token_list()) :: {:ok, json_value()} | {:error, String.t()}
-  def parse(tokens) do
+  @spec parse(String.t()) :: {:ok, json_value()} | {:error, String.t()}
+  def parse(data) do
+    case Lexer.scan(data) do
+      {:error, reason} -> {:error, reason}
+      tokens when is_list(tokens) -> do_parse(tokens)
+    end
+  end
+
+  defp do_parse(tokens) do
     case parse_value(tokens) do
       {:error, error} ->
         {:error, error}

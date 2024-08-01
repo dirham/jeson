@@ -1,6 +1,9 @@
 # Jxon
 
-**TODO: Add description**
+**Simple Json parser for elixir**
+
+## TODO
+Publish the package into Hex
 
 ## Installation
 
@@ -15,7 +18,23 @@ def deps do
 end
 ```
 
+## Usage
+- From file
+```elixir
+case File.read("path_to_file") do
+  {:ok, data} -> Jxon.parse(data)
+  {:error, reason} -> reason
+end
+```
+
+- from string
+```elixir
+data = ~s({"some": 1, "data": [true]})
+case Jxon.parse(data) do
+  {:ok, value} -> value
+  {:error, reason} -> reason
+```
+
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at <https://hexdocs.pm/jxon>.
-

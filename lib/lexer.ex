@@ -1,4 +1,5 @@
 defmodule Lexer do
+  @spec scan(binary()) :: list(Token.t()) | {:error, String.t()}
   def scan(input) do
     tokenize(input, [], 1, 1)
   end

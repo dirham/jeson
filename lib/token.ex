@@ -13,12 +13,13 @@ defmodule Token do
           | :TRUE
           | :FALSE
           | :NULL
-          | :ILLEGAL
           | :EOF
 
   @type t :: %__MODULE__{
           type: token(),
-          value: any()
+          value: any(),
+          line: non_neg_integer(),
+          row: non_neg_integer()
         }
 
   defguardp in_type?(char)
@@ -34,12 +35,11 @@ defmodule Token do
                    :TRUE,
                    :FALSE,
                    :NULL,
-                   :ILLEGAL,
                    :EOF
                  ]
 
   @spec new(token(), any(), number(), number()) :: t() | no_return()
   def new(type, value, line, row) when in_type?(type) do
-    %Token{type: type, value: value, line: line, row: row}
+    %__MODULE__{type: type, value: value, line: line, row: row}
   end
 end

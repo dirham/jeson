@@ -3,8 +3,8 @@ defmodule Lexer do
     tokenize(input, [], 1, 1)
   end
 
-  defp tokenize(<<>>, tokens, _line, _row) do
-    Enum.reverse([Token.new(:EOF, "") | tokens])
+  defp tokenize(<<>>, tokens, line, row) do
+    Enum.reverse([Token.new(:EOF, "", line, row) | tokens])
   end
 
   defp tokenize(input, tokens, line, row) do
@@ -21,7 +21,7 @@ defmodule Lexer do
       <<?t, rest::binary>> ->
         case rest do
           <<?r, ?u, ?e, next::binary>> ->
-            tokenize(next, [Token.new(:TRUE, true) | tokens], line, row + 4)
+            tokenize(next, [Token.new(:TRUE, true, line, row) | tokens], line, row + 4)
 
           _ ->
             {:error, "Unexpected token at line #{line} row #{row}"}
@@ -30,7 +30,7 @@ defmodule Lexer do
       <<?f, rest::binary>> ->
         case rest do
           <<?a, ?l, ?s, ?e, next::binary>> ->
-            tokenize(next, [Token.new(:FALSE, false) | tokens], line, row + 5)
+            tokenize(next, [Token.new(:FALSE, false, line, row) | tokens], line, row + 5)
 
           _ ->
             {:error, "Unexpected token at line #{line} row #{row}"}
@@ -39,7 +39,7 @@ defmodule Lexer do
       <<?n, rest::binary>> ->
         case rest do
           <<?u, ?l, ?l, next::binary>> ->
-            tokenize(next, [Token.new(:NULL, nil) | tokens], line, row + 4)
+            tokenize(next, [Token.new(:NULL, nil, line, row) | tokens], line, row + 4)
 
           any ->
             {:error, "Unexpected token #{any} at line #{line} row #{row}"}
@@ -47,23 +47,23 @@ defmodule Lexer do
 
       # array
       <<?[, rest::binary>> ->
-        tokenize(rest, [Token.new(:LBRACKET, "[") | tokens], line, row + 1)
+        tokenize(rest, [Token.new(:LBRACKET, "[", line, row) | tokens], line, row + 1)
 
       <<?], rest::binary>> ->
-        tokenize(rest, [Token.new(:RBRACKET, "]") | tokens], line, row + 1)
+        tokenize(rest, [Token.new(:RBRACKET, "]", line, row) | tokens], line, row + 1)
 
       # object
       <<?{, rest::binary>> ->
-        tokenize(rest, [Token.new(:LBRACE, "{") | tokens], line, row + 1)
+        tokenize(rest, [Token.new(:LBRACE, "{", line, row) | tokens], line, row + 1)
 
       <<?}, rest::binary>> ->
-        tokenize(rest, [Token.new(:RBRACE, "}") | tokens], line, row + 1)
+        tokenize(rest, [Token.new(:RBRACE, "}", line, row) | tokens], line, row + 1)
 
       <<?:, rest::binary>> ->
-        tokenize(rest, [Token.new(:COLON, ":") | tokens], line, row + 1)
+        tokenize(rest, [Token.new(:COLON, ":", line, row) | tokens], line, row + 1)
 
       <<?,, rest::binary>> ->
-        tokenize(rest, [Token.new(:COMMA, ",") | tokens], line, row + 1)
+        tokenize(rest, [Token.new(:COMMA, ",", line, row) | tokens], line, row + 1)
 
       # whitespaces
       <<char, rest::binary>> when char in [?\s, ?\t] ->
@@ -108,14 +108,20 @@ defmodule Lexer do
         case float do
           true ->
             case to_number(acc, true) do
-              {:ok, number} -> tokenize(data, [Token.new(:NUMBER, number) | tokens], line, row)
-              {:error, msg} -> {:error, msg <> "#{line} row #{row}"}
+              {:ok, number} ->
+                tokenize(data, [Token.new(:NUMBER, number, line, row) | tokens], line, row)
+
+              {:error, msg} ->
+                {:error, msg <> "#{line} row #{row}"}
             end
 
           false ->
             case to_number(acc, false) do
-              {:ok, number} -> tokenize(data, [Token.new(:NUMBER, number) | tokens], line, row)
-              {:error, msg} -> {:error, msg <> "#{line} row #{row}"}
+              {:ok, number} ->
+                tokenize(data, [Token.new(:NUMBER, number, line, row) | tokens], line, row)
+
+              {:error, msg} ->
+                {:error, msg <> "#{line} row #{row}"}
             end
         end
     end
@@ -124,7 +130,7 @@ defmodule Lexer do
   defp read_string(data, tokens, line, row, acc \\ "") do
     case data do
       <<?", rest::binary>> ->
-        tokenize(rest, [Token.new(:STRING, acc) | tokens], line, row + 1)
+        tokenize(rest, [Token.new(:STRING, acc, line, row) | tokens], line, row + 1)
 
       <<char, rest::binary>> ->
         read_string(rest, tokens, line, row + 1, acc <> <<char>>)

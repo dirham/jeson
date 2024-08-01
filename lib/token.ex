@@ -1,5 +1,5 @@
 defmodule Token do
-  defstruct [:type, :value]
+  defstruct [:type, :value, :line, :row]
 
   @type token ::
           :STRING
@@ -15,6 +15,11 @@ defmodule Token do
           | :NULL
           | :ILLEGAL
           | :EOF
+
+  @type t :: %__MODULE__{
+          type: token(),
+          value: any()
+        }
 
   defguardp in_type?(char)
             when char in [
@@ -33,8 +38,8 @@ defmodule Token do
                    :EOF
                  ]
 
-  @spec new(token(), any()) :: %__MODULE__{} | no_return()
-  def new(type, value) when in_type?(type) do
-    %__MODULE__{type: type, value: value}
+  @spec new(token(), any(), number(), number()) :: t() | no_return()
+  def new(type, value, line, row) when in_type?(type) do
+    %Token{type: type, value: value, line: line, row: row}
   end
 end

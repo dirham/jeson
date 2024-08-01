@@ -32,7 +32,7 @@ end
 ```elixir
 data = ~s({"some": 1, "data": [true]})
 case Jxon.parse(data) do
-  {:ok, value} -> value # will return represent json object as Map %{"data" => [true], "some" => 1}
+  {:ok, value} -> value # will return json object representation as a Map %{"data" => [true], "some" => 1}
   {:error, reason} -> reason
 end
 ```

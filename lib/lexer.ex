@@ -11,11 +11,11 @@ defmodule Lexer do
     case input do
       # String literal
       <<?", rest::binary>> ->
-        read_string(rest, tokens, line, row)
+        read_string(rest, tokens, line, row, row + 1)
 
       # number literal
       <<char, rest::binary>> when char in ?0..?9 or char == ?- ->
-        read_number(rest, tokens, line, row + 1, false, <<char>>)
+        read_number(rest, tokens, line, row, row + 1, false, <<char>>)
 
       # literals true/false/null
       <<?t, rest::binary>> ->
@@ -83,21 +83,37 @@ defmodule Lexer do
     end
   end
 
-  defp read_number(data, tokens, line, row, float, acc) do
+  defp read_number(data, tokens, line, start, row, float, acc) do
     case data do
       <<char, rest::binary>> when char in ?0..?9 ->
-        read_number(rest, tokens, line, row + 1, float, acc <> <<char>>)
+        read_number(rest, tokens, line, start, row + 1, float, acc <> <<char>>)
 
       <<char, rest::binary>> when char == ?. ->
-        read_number(rest, tokens, line, row + 1, true, acc <> <<char>>)
+        read_number(rest, tokens, line, start, row + 1, true, acc <> <<char>>)
 
       <<char, rest::binary>> when char in [?e, ?E] ->
         case rest do
           <<next_char, rest2::binary>> when next_char in [?-, ?+] ->
-            read_number(rest2, tokens, line, row + 2, true, acc <> <<char>> <> <<next_char>>)
+            read_number(
+              rest2,
+              tokens,
+              line,
+              start,
+              row + 2,
+              true,
+              acc <> <<char>> <> <<next_char>>
+            )
 
           <<next_char, rest2::binary>> when next_char in ?0..?9 ->
-            read_number(rest2, tokens, line, row + 2, true, acc <> <<char>> <> <<next_char>>)
+            read_number(
+              rest2,
+              tokens,
+              line,
+              start,
+              row + 2,
+              true,
+              acc <> <<char>> <> <<next_char>>
+            )
 
           _ ->
             {:error,
@@ -109,7 +125,7 @@ defmodule Lexer do
           true ->
             case to_number(acc, true) do
               {:ok, number} ->
-                tokenize(data, [Token.new(:NUMBER, number, line, row) | tokens], line, row)
+                tokenize(data, [Token.new(:NUMBER, number, line, start) | tokens], line, row)
 
               {:error, msg} ->
                 {:error, msg <> "#{line} row #{row}"}
@@ -118,7 +134,7 @@ defmodule Lexer do
           false ->
             case to_number(acc, false) do
               {:ok, number} ->
-                tokenize(data, [Token.new(:NUMBER, number, line, row) | tokens], line, row)
+                tokenize(data, [Token.new(:NUMBER, number, line, start) | tokens], line, row)
 
               {:error, msg} ->
                 {:error, msg <> "#{line} row #{row}"}
@@ -127,13 +143,13 @@ defmodule Lexer do
     end
   end
 
-  defp read_string(data, tokens, line, row, acc \\ "") do
+  defp read_string(data, tokens, line, start, row, acc \\ "") do
     case data do
       <<?", rest::binary>> ->
-        tokenize(rest, [Token.new(:STRING, acc, line, row) | tokens], line, row + 1)
+        tokenize(rest, [Token.new(:STRING, acc, line, start) | tokens], line, row + 1)
 
       <<char, rest::binary>> ->
-        read_string(rest, tokens, line, row + 1, acc <> <<char>>)
+        read_string(rest, tokens, line, start, row + 1, acc <> <<char>>)
 
       <<>> ->
         {:error, "Unexpected token at line #{line} row #{row}, expect \""}

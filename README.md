@@ -3,7 +3,8 @@
 **Simple Json parser for elixir**
 
 ## TODO
-Publish the package into Hex
+- Publish the package into Hex
+- More test cases
 
 ## Installation
 

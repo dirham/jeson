@@ -32,8 +32,9 @@ end
 ```elixir
 data = ~s({"some": 1, "data": [true]})
 case Jxon.parse(data) do
-  {:ok, value} -> value
+  {:ok, value} -> value # will return represent json object as Map %{"data" => [true], "some" => 1}
   {:error, reason} -> reason
+end
 ```
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)

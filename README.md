@@ -1,20 +1,18 @@
-# Jxon
+# Jason
 
 **Simple Json parser for elixir**
 
 ## TODO
-- Publish the package into Hex
 - More test cases
 
+## Documentations
+Full documentation can be found at [Hexdocs](https://hexdocs.pm/jeson).
 ## Installation
-
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `jxon` to your list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
   [
-    {:jxon, "~> 0.1.0"}
+    {:jeson, "~> 0.1.0"}
   ]
 end
 ```
@@ -23,7 +21,7 @@ end
 - From file
 ```elixir
 case File.read("path_to_file") do
-  {:ok, data} -> Jxon.parse(data)
+  {:ok, data} -> Jeson.parse(data)
   {:error, reason} -> reason
 end
 ```
@@ -31,12 +29,8 @@ end
 - from string
 ```elixir
 data = ~s({"some": 1, "data": [true]})
-case Jxon.parse(data) do
+case Jeson.parse(data) do
   {:ok, value} -> value # will return json object representation as a Map %{"data" => [true], "some" => 1}
   {:error, reason} -> reason
 end
 ```
-
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at <https://hexdocs.pm/jxon>.

@@ -7,7 +7,11 @@ defmodule Jxon.MixProject do
       version: "0.1.0",
       elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      description: description(),
+      package: package(),
+      name: "Jxon",
+      source: "https://github.com/dirham/jxon"
     ]
   end
 
@@ -23,6 +27,20 @@ defmodule Jxon.MixProject do
     [
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
+    ]
+  end
+
+  defp description() do
+    "Simple json parser written on full elixir"
+  end
+
+  defp package() do
+    [
+      name: "jxon",
+      files: ~w(lib priv .formatter.exs mix.exs README* readme* LICENSE*
+                  license* CHANGELOG* changelog* src),
+      licenses: ["MIT"],
+      links: %{"GitHub" => "https://github.com/dirham/jxon"}
     ]
   end
 end

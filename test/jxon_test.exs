@@ -3,6 +3,6 @@ defmodule JxonTest do
   doctest Jxon
 
   test "greets the world" do
-    assert Jxon.hello() == :world
+    assert {:ok, _} = Jxon.parse(~s({"some": 12, "arr": [true]}))
   end
 end
